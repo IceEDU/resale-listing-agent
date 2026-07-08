@@ -20,23 +20,25 @@ export default function ManualStatsForm({
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function submit() {
     setBusy(true);
-    const res = await fetch(`/api/items/${itemId}/metrics`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        marketplace,
-        views: Number(views) || 0,
-        saves: Number(saves) || 0,
-        messages: Number(messages) || 0,
-        listingUrl: listingUrl || undefined,
-        notes: notes || undefined,
-      }),
-    });
-    setBusy(false);
-    if (res.ok) {
+    setError(null);
+    try {
+      const res = await fetch(`/api/items/${itemId}/metrics`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          marketplace,
+          views: Number(views) || 0,
+          saves: Number(saves) || 0,
+          messages: Number(messages) || 0,
+          listingUrl: listingUrl || undefined,
+          notes: notes || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error();
       setSaved(true);
       setViews("");
       setSaves("");
@@ -44,6 +46,10 @@ export default function ManualStatsForm({
       setNotes("");
       setTimeout(() => setSaved(false), 2500);
       router.refresh();
+    } catch {
+      setError("Couldn't save the stats, try again.");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -89,6 +95,7 @@ export default function ManualStatsForm({
         Notes (optional)
         <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. two buyers asked about pickup" className="input" />
       </label>
+      {error && <p className="text-sm text-red-300">{error}</p>}
       <button type="button" disabled={busy} onClick={submit} className="btn-primary">
         {busy ? "Saving…" : saved ? "Saved ✓ advice updated" : "Log stats"}
       </button>

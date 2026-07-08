@@ -18,22 +18,31 @@ export default function ItemForm({ item }: { item: Item }) {
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
     setSaved(false);
+    setError(null);
   }
 
   async function save() {
     setSaving(true);
-    await fetch(`/api/items/${item.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, price: Number(form.price) || item.price }),
-    });
-    setSaving(false);
-    setSaved(true);
-    router.refresh();
+    setError(null);
+    try {
+      const res = await fetch(`/api/items/${item.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, price: Number(form.price) || item.price }),
+      });
+      if (!res.ok) throw new Error();
+      setSaved(true);
+      router.refresh();
+    } catch {
+      setError("Couldn't save, try again.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -92,6 +101,8 @@ export default function ItemForm({ item }: { item: Item }) {
           className="input"
         />
       </label>
+
+      {error && <p className="text-sm text-red-300">{error}</p>}
 
       <div className="flex gap-2 pt-1">
         <button type="button" onClick={save} disabled={saving} className="btn-secondary flex-1">
