@@ -108,6 +108,7 @@ export default async function AssistPage({
         price={price}
         body={body}
         photoChecklist={photoChecklist}
+        fieldGuide={fallback.fields}
         createUrl={fallback.createUrl}
         mode={mode}
       />

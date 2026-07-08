@@ -59,7 +59,7 @@ async function main() {
   }
   ok(`${ASSISTED_IDS.length} assisted targets use HTTPS create pages with manual-post guidance`);
 
-  console.log("2. Assisted drafts contain the paste-ready basics");
+  console.log("2. Assisted drafts contain the paste-ready basics and form field maps");
   for (const marketplace of ASSISTED_IDS) {
     const draft = buildAssistedDraft(item, marketplace);
     assert(draft.marketplace === marketplace, `${marketplace} draft returned the wrong marketplace`);
@@ -67,8 +67,21 @@ async function main() {
     assert(draft.clipboardText.includes(`Price: $${item.price}`), `${marketplace} draft missing price`);
     assert(draft.clipboardText.includes("Condition:"), `${marketplace} draft missing condition`);
     assert(draft.clipboardText.includes(item.description), `${marketplace} draft missing description`);
+    assert(draft.fields.length === ASSISTED_TARGETS[marketplace].fieldOrder.length, `${marketplace} field map length mismatch`);
+    assert(draft.fields.every((field) => field.label && field.value && field.note), `${marketplace} field map has empty guidance`);
+    assert(
+      draft.fields.some((field) => /Photos?/i.test(field.label) && /does not send|Upload manually/i.test(field.note)),
+      `${marketplace} field map missing manual photo-upload guidance`,
+    );
+    if (marketplace === "facebook") {
+      assert(draft.fields[0]?.label === "Photos", "facebook field map should start with photos");
+      assert(
+        draft.fields.some((field) => field.label === "Location" && /public meetup/i.test(field.note)),
+        "facebook field map missing safe public-meetup location note",
+      );
+    }
   }
-  ok("each assisted draft includes title, price, condition, and description");
+  ok("each assisted draft includes paste-ready copy plus marketplace-specific manual field order");
 
   console.log("3. Marketplace picker copy does not claim direct assisted automation");
   const options = marketplaceOptions();

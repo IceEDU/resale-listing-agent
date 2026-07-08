@@ -31,7 +31,7 @@ Category profiles cover the seller-specific details that generic copy usually mi
 - Home goods & furniture
 - Books & media
 
-Each specialist provides keyword prompts, condition checks, risk flags, and pricing notes. The assisted posting screen now surfaces the marketplace profile and an inferred category specialist from the listing category/title, so Facebook-first local posting guidance is visible while preserving the assisted-only safety model.
+Each specialist provides keyword prompts, condition checks, risk flags, and pricing notes. The assisted posting screen now surfaces the marketplace profile, an inferred category specialist from the listing category/title, and a marketplace-specific manual field order. Facebook starts with photos/title/price/category/condition/description/availability/location, including safe public-meetup wording, so the seller gets a smoother posting checklist while preserving the assisted-only safety model.
 
 ## Public tooling notes
 

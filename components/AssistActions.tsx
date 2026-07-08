@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { AssistedField } from "@/lib/connectors/assisted";
 
 function CopyRow({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false);
@@ -40,6 +41,7 @@ export default function AssistActions({
   price,
   body,
   photoChecklist,
+  fieldGuide,
   createUrl,
   mode = "post",
 }: {
@@ -49,6 +51,7 @@ export default function AssistActions({
   price: number;
   body: string;
   photoChecklist: string[];
+  fieldGuide: AssistedField[];
   createUrl: string;
   mode?: "post" | "refresh";
 }) {
@@ -88,8 +91,35 @@ export default function AssistActions({
         <CopyRow label="Description" value={body} />
       </section>
 
+      <section className="card space-y-3">
+        <div>
+          <h2 className="section-label">2. Marketplace field order</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Use this as the manual form checklist. Nothing here is submitted automatically.
+          </p>
+        </div>
+        <ol className="space-y-2">
+          {fieldGuide.map((field, index) => (
+            <li key={`${field.label}-${index}`} className="rounded-xl bg-white/5 px-3 py-2.5">
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-xs font-semibold text-blue-200">
+                  {index + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <p className="text-sm font-semibold text-zinc-100">{field.label}</p>
+                    <p className="truncate text-sm text-zinc-300">{field.value}</p>
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-zinc-500">{field.note}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="card">
-        <h2 className="section-label">2. Photo checklist</h2>
+        <h2 className="section-label">3. Photo checklist</h2>
         <ul className="mt-2 space-y-2">
           {photoChecklist.map((tip, i) => (
             <li key={tip}>
@@ -110,13 +140,13 @@ export default function AssistActions({
       </section>
 
       <a href={createUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary">
-        3. Open the marketplace ↗
+        4. Open the marketplace ↗
       </a>
 
       {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button type="button" onClick={markPosted} disabled={busy} className="btn-primary">
-        {busy ? "Saving…" : mode === "refresh" ? "4. I reposted it" : "4. I posted it"}
+        {busy ? "Saving…" : mode === "refresh" ? "5. I reposted it" : "5. I posted it"}
       </button>
     </div>
   );
