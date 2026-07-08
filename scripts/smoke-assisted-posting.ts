@@ -3,6 +3,11 @@ import { API_CONNECTORS, marketplaceOptions } from "../lib/connectors";
 import { toDraftListing } from "../lib/connectors";
 import { seedItems } from "../lib/repo/seed-data";
 import type { MarketplaceId } from "../lib/types";
+import {
+  CATEGORY_AGENT_PROFILES,
+  MARKETPLACE_AGENT_PROFILES,
+  type SellerChannelId,
+} from "../lib/marketplace-agents";
 
 /**
  * Assisted posting smoke test.
@@ -77,7 +82,44 @@ async function main() {
   }
   ok("assisted marketplace options are labeled without auto-posting claims");
 
-  console.log("4. eBay/Etsy official API connectors stay honest without credentials");
+  console.log("4. Marketplace/category mini-agent profiles keep unsafe channels assisted or stubbed");
+  const expectedChannels: SellerChannelId[] = [
+    "facebook",
+    "ebay",
+    "etsy",
+    "craigslist",
+    "mercari",
+    "poshmark",
+    "amazon",
+  ];
+  for (const id of expectedChannels) {
+    const profile = MARKETPLACE_AGENT_PROFILES[id];
+    assert(profile, `${id} marketplace agent profile missing`);
+    assert(profile.researchFocus.length > 0, `${id} profile missing research focus`);
+    assert(profile.pricingInputs.length > 0, `${id} profile missing pricing inputs`);
+    assert(profile.postingStrategy.length > 0, `${id} profile missing posting strategy`);
+    if (["facebook", "craigslist", "mercari", "poshmark"].includes(id)) {
+      assert(profile.postingMode === "assisted-only", `${id} must remain assisted-only`);
+      assert(
+        profile.guardrails.some((guardrail) => /No scraping|direct posting/i.test(guardrail.text)),
+        `${id} profile missing assisted-only safety guardrail`,
+      );
+    }
+    if (id === "amazon") {
+      assert(profile.postingMode === "future-official-api", "amazon must stay a future official API stub");
+      assert(
+        profile.guardrails.some((guardrail) => /No fake Amazon integration|SP-API/i.test(guardrail.text)),
+        "amazon profile missing SP-API/no-fake-integration guardrail",
+      );
+    }
+  }
+  assert(
+    Object.keys(CATEGORY_AGENT_PROFILES).length >= 7,
+    "category specialist profiles missing expected coverage",
+  );
+  ok("mini-agent profiles cover Facebook-first assisted workflows, Amazon stubs, and category specialists");
+
+  console.log("5. eBay/Etsy official API connectors stay honest without credentials");
   const connectorDraft = toDraftListing(item);
   for (const id of ["ebay", "etsy"] as const) {
     const connector = API_CONNECTORS[id];

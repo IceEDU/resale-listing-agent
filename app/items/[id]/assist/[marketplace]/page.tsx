@@ -25,10 +25,11 @@ export default async function AssistPage({
   const { mode: rawMode } = await searchParams;
   const mode = rawMode === "refresh" ? "refresh" : "post";
   const item = await getItem(id);
-  if (!item || !isAssisted(marketplace as MarketplaceId)) notFound();
+  const marketplaceId = marketplace as MarketplaceId;
+  if (!item || !isAssisted(marketplaceId)) notFound();
 
-  const fallback = buildAssistedDraft(item, marketplace as "facebook");
-  const agentCopy = item.agent?.copy[marketplace as MarketplaceId];
+  const fallback = buildAssistedDraft(item, marketplaceId);
+  const agentCopy = item.agent?.copy[marketplaceId];
   const title = agentCopy?.title ?? item.title;
   const price = agentCopy?.recommendedPrice ?? item.price;
   const body = agentCopy?.body ?? fallback.clipboardText;
