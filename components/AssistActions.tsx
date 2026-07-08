@@ -55,16 +55,20 @@ export default function AssistActions({
   const router = useRouter();
   const [checked, setChecked] = useState<boolean[]>(photoChecklist.map(() => false));
   const [busy, setBusy] = useState(false);
+  const [listingUrl, setListingUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function markPosted() {
     setBusy(true);
     setError(null);
+    const notePayload = listingUrl.trim() ? { externalUrl: listingUrl.trim() } : {};
     const res = await fetch(`/api/items/${itemId}/listings/${marketplace}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(
-        mode === "refresh" ? { action: "refreshed" } : { status: "assisted_posted" },
+        mode === "refresh"
+          ? { action: "refreshed", ...notePayload }
+          : { status: "assisted_posted", ...notePayload },
       ),
     });
     if (!res.ok) {
@@ -113,10 +117,24 @@ export default function AssistActions({
         3. Open the marketplace ↗
       </a>
 
+      <section className="card space-y-2">
+        <h2 className="section-label">4. Save the listing URL</h2>
+        <p className="text-sm leading-relaxed text-zinc-500">
+          After you publish manually, paste the public listing URL here so the app can track where it lives.
+        </p>
+        <input
+          type="url"
+          value={listingUrl}
+          onChange={(event) => setListingUrl(event.target.value)}
+          placeholder="https://..."
+          className="w-full rounded-2xl border border-white/10 bg-zinc-950 px-3 py-3 text-sm text-zinc-100 outline-none focus:border-blue-400"
+        />
+      </section>
+
       {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button type="button" onClick={markPosted} disabled={busy} className="btn-primary">
-        {busy ? "Saving…" : mode === "refresh" ? "4. I reposted it" : "4. I posted it"}
+        {busy ? "Saving…" : mode === "refresh" ? "5. I reposted it" : "5. I posted it"}
       </button>
     </div>
   );

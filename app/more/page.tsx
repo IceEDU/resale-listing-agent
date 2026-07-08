@@ -12,6 +12,12 @@ export default function MorePage() {
 
       <section className="space-y-3">
         <h2 className="section-label">Service</h2>
+        <Link href="/more/posting-lab" className="card block active:bg-white/5">
+          <div className="text-sm font-semibold">Marketplace Posting Lab →</div>
+          <p className="mt-1 text-sm text-zinc-500">
+            Safe cross-listing test bench: copy bundles, platform checklists, and assisted-only handoff.
+          </p>
+        </Link>
         <Link href="/more/automation" className="card block active:bg-white/5">
           <div className="text-sm font-semibold">Automation service →</div>
           <p className="mt-1 text-sm text-zinc-500">

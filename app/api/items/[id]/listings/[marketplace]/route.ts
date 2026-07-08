@@ -58,7 +58,11 @@ export async function PATCH(req: Request, { params }: Params) {
     );
   }
 
-  const updated = await setListingStatus(id, mp, status);
+  let updated = await setListingStatus(id, mp, status);
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (typeof body.externalUrl === "string" && body.externalUrl) {
+    updated = await updateListingMeta(id, mp, { externalUrl: body.externalUrl });
+    if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   return NextResponse.json(updated);
 }
