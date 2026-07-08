@@ -33,7 +33,7 @@ export function marketplaceOptions(): MarketplaceOption[] {
     id,
     label: t.label,
     mode: "assisted",
-    blurb: "Opens a pre-filled draft — you tap Post",
+    blurb: "Copies a safe draft, opens the marketplace, and you tap Post",
     configured: true,
   }));
   return [...api, ...assisted];

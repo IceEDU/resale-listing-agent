@@ -93,6 +93,7 @@ Serverless-ready (Vercel or any Node host): no long-lived processes, background 
 ## Health, verification, and tests
 
 - `GET /api/health`: app status, database reachability, storage mode, last job run, version.
+- `npm run smoke:assisted-posting`: no-DB safety smoke for assisted marketplace copy, create-page links, and honest eBay/Etsy stubs. It makes no marketplace network calls.
 - `npm run smoke:persistence`: CRUD + persistence through a fresh DB connection, then a self-audit. Cleans up after itself.
 - `npm run smoke:automation`: job runner idempotence (no duplicate suggestions), price-floor guarantee, stale-listing detection, manual-stats-driven advice flips, self-audit assertions. Cleans up after itself.
 
