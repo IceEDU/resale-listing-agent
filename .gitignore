@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+build/
+
+# environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# test coverage
+coverage/
+
+# local database files
+*.sqlite
+*.sqlite3
+*.db
+postgres-data/
+pgdata/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# misc
+.DS_Store
+*.pem
+.vercel
+next-env.d.ts
+.claude/settings.local.json

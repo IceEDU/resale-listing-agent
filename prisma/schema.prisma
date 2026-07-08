@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String                  @id @default(cuid())
+  email       String                  @unique
+  createdAt   DateTime                @default(now())
+  items       Item[]
+  connections MarketplaceConnection[]
+}
+
+model Item {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String           @default("")
+  category    String           @default("")
+  brand       String?
+  condition   Condition        @default(GOOD)
+  price       Decimal?         @db.Decimal(10, 2)
+  status      ItemStatus       @default(DRAFT)
+  agentData   Json?
+  answers     Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  photos      Photo[]
+  listings    Listing[]
+  insights    PricingInsight[]
+  priceHistory    PriceHistory[]
+  metrics         ListingMetric[]
+  recommendations Recommendation[]
+}
+
+model PriceHistory {
+  id          String       @id @default(cuid())
+  itemId      String
+  item        Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  listingId   String?
+  marketplace Marketplace?
+  price       Decimal      @db.Decimal(10, 2)
+  source      PriceSource
+  reason      String       @default("")
+  createdAt   DateTime     @default(now())
+}
+
+model ListingMetric {
+  id          String       @id @default(cuid())
+  itemId      String
+  item        Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  listingId   String?
+  marketplace Marketplace?
+  views       Int          @default(0)
+  saves       Int          @default(0)
+  messages    Int          @default(0)
+  listingUrl  String?
+  notes       String?
+  createdAt   DateTime     @default(now())
+}
+
+model AutomationRule {
+  id          String             @id @default(cuid())
+  itemId      String?
+  type        RecommendationType
+  label       String
+  description String             @default("")
+  enabled     Boolean            @default(true)
+  config      Json?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model Recommendation {
+  id              String                 @id @default(cuid())
+  itemId          String
+  item            Item                   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  listingId       String?
+  marketplace     Marketplace?
+  type            RecommendationType
+  priority        RecommendationPriority
+  message         String
+  suggestedAction Json?
+  status          RecommendationStatus   @default(PENDING)
+  fingerprint     String                 @default("")
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@index([itemId, fingerprint])
+}
+
+model JobRun {
+  id                     String    @id @default(cuid())
+  jobName                String
+  status                 JobStatus @default(RUNNING)
+  startedAt              DateTime  @default(now())
+  finishedAt             DateTime?
+  summary                String    @default("")
+  error                  String?
+  dryRun                 Boolean   @default(false)
+  createdRecommendations Int       @default(0)
+  updatedRecommendations Int       @default(0)
+}
+
+model SelfAuditResult {
+  id         String        @id @default(cuid())
+  severity   AuditSeverity
+  area       AuditArea
+  message    String
+  entityType String
+  entityId   String?
+  resolved   Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  resolvedAt DateTime?
+}
+
+model Photo {
+  id               String   @id @default(cuid())
+  itemId           String
+  item             Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  blobKey          String
+  altText          String   @default("")
+  consentGrantedAt DateTime
+  exifStripped     Boolean  @default(true)
+  createdAt        DateTime @default(now())
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  itemId      String
+  item        Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  marketplace Marketplace
+  mode        ListingMode
+  status      ListingStatus @default(DRAFT)
+  externalId  String?
+  externalUrl String?
+  note        String?
+  price       Decimal?      @db.Decimal(10, 2)
+  postedAt    DateTime?
+  endedAt     DateTime?
+  lastCheckedAt    DateTime?
+  lastRefreshedAt  DateTime?
+  nextReviewAt     DateTime?
+  manualStatusNote String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([itemId, marketplace])
+}
+
+model PricingInsight {
+  id                  String     @id @default(cuid())
+  itemId              String
+  item                Item       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  estimate            Decimal    @db.Decimal(10, 2)
+  rangeLow            Decimal    @db.Decimal(10, 2)
+  rangeHigh           Decimal    @db.Decimal(10, 2)
+  trend90dPct         Float
+  sellabilityScore    Int
+  projectedDaysToSell Int
+  confidence          Confidence
+  explanation         String
+  compsCount          Int        @default(0)
+  createdAt           DateTime   @default(now())
+}
+
+model MarketplaceConnection {
+  id                    String      @id @default(cuid())
+  userId                String
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  marketplace           Marketplace
+  encryptedAccessToken  String?
+  encryptedRefreshToken String?
+  expiresAt             DateTime?
+  createdAt             DateTime    @default(now())
+
+  @@unique([userId, marketplace])
+}
+
+enum Marketplace {
+  EBAY
+  ETSY
+  FACEBOOK
+  CRAIGSLIST
+  MERCARI
+  POSHMARK
+}
+
+enum ListingMode {
+  API
+  ASSISTED
+}
+
+enum ListingStatus {
+  DRAFT
+  READY
+  ASSISTED_POSTED
+  ACTIVE
+  SOLD
+  DELISTED
+}
+
+enum ItemStatus {
+  DRAFT
+  ACTIVE
+  SOLD
+  STALE
+}
+
+enum Condition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  FOR_PARTS
+}
+
+enum Confidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PriceSource {
+  AGENT
+  USER
+  CONNECTOR
+  MANUAL
+}
+
+enum RecommendationType {
+  PRICE_DROP
+  REPOST
+  FIX_TITLE
+  FIX_PHOTOS
+  HOLD
+  REFRESH_KEYWORDS
+  REFRESH_LISTING
+  REPOST_ASSISTED
+  CHECK_MESSAGES
+  UPDATE_MANUAL_STATS
+}
+
+enum JobStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum AuditArea {
+  ITEM
+  LISTING
+  RECOMMENDATION
+  CONNECTOR
+  PRICE
+  PRIVACY
+  JOB
+}
+
+enum RecommendationPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum RecommendationStatus {
+  PENDING
+  ACCEPTED
+  DISMISSED
+  DONE
+}
