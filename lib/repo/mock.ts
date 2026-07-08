@@ -200,7 +200,10 @@ export const mockRepo: Repository = {
         ? {
             ...l,
             status,
-            postedAt: status === "active" ? new Date().toISOString() : l.postedAt,
+            postedAt:
+              status === "active" || status === "assisted_posted"
+                ? new Date().toISOString()
+                : l.postedAt,
           }
         : l,
     );

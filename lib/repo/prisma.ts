@@ -385,7 +385,7 @@ export const prismaRepo: Repository = {
         },
         data: {
           status: up<DbListingStatus>(status),
-          ...(status === "active" ? { postedAt: new Date() } : {}),
+          ...(status === "active" || status === "assisted_posted" ? { postedAt: new Date() } : {}),
         },
       });
     } catch {

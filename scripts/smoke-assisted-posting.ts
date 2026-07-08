@@ -2,6 +2,7 @@ import { buildAssistedDraft, ASSISTED_IDS, ASSISTED_TARGETS } from "../lib/conne
 import { API_CONNECTORS, marketplaceOptions } from "../lib/connectors";
 import { toDraftListing } from "../lib/connectors";
 import { seedItems } from "../lib/repo/seed-data";
+import { getItem, setListingStatus, updateListingMeta, upsertListing } from "../lib/store";
 import type { MarketplaceId } from "../lib/types";
 import {
   CATEGORY_AGENT_PROFILES,
@@ -146,7 +147,37 @@ async function main() {
   );
   ok("mini-agent profiles cover Facebook-first assisted workflows, Amazon stubs, and category specialists");
 
-  console.log("5. eBay/Etsy official API connectors stay honest without credentials");
+  console.log("5. Assisted posting status captures proof for later follow-up");
+  const proofItemId = item.id;
+  const proofListing = await upsertListing(proofItemId, {
+    marketplace: "craigslist",
+    mode: "assisted",
+    status: "ready",
+  });
+  assert(proofListing, "could not create proof-capture test listing");
+  const posted = await setListingStatus(proofItemId, "craigslist", "assisted_posted");
+  const postedListing = posted?.listings.find((listing) => listing.marketplace === "craigslist");
+  assert(postedListing?.postedAt, "assisted_posted listing did not receive a postedAt timestamp");
+  const proofUrl = "https://newyork.craigslist.org/app/d/example-listing/123.html";
+  const withProof = await updateListingMeta(proofItemId, "craigslist", {
+    externalUrl: proofUrl,
+    manualStatusNote: "Posted manually with public pickup wording.",
+  });
+  const savedProof = withProof?.listings.find((listing) => listing.marketplace === "craigslist");
+  assert(savedProof?.externalUrl === proofUrl, "assisted listing URL proof was not saved");
+  assert(
+    savedProof?.manualStatusNote?.includes("public pickup"),
+    "assisted listing manual note was not saved",
+  );
+  const reloadedProof = await getItem(proofItemId);
+  assert(
+    reloadedProof?.listings.find((listing) => listing.marketplace === "craigslist")?.externalUrl ===
+      proofUrl,
+    "assisted proof did not survive a store reload",
+  );
+  ok("assisted listings can store manual listing URL proof and follow-up notes");
+
+  console.log("6. eBay/Etsy official API connectors stay honest without credentials");
   const connectorDraft = toDraftListing(item);
   for (const id of ["ebay", "etsy"] as const) {
     const connector = API_CONNECTORS[id];

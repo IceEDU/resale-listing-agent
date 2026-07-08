@@ -59,17 +59,25 @@ export default function AssistActions({
 }) {
   const router = useRouter();
   const [checked, setChecked] = useState<boolean[]>(photoChecklist.map(() => false));
+  const [listingUrl, setListingUrl] = useState("");
+  const [manualNote, setManualNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function markPosted() {
     setBusy(true);
     setError(null);
+    const optionalMeta = {
+      ...(listingUrl.trim() ? { externalUrl: listingUrl.trim() } : {}),
+      ...(manualNote.trim() ? { manualStatusNote: manualNote.trim() } : {}),
+    };
     const res = await fetch(`/api/items/${itemId}/listings/${marketplace}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(
-        mode === "refresh" ? { action: "refreshed" } : { status: "assisted_posted" },
+        mode === "refresh"
+          ? { action: "refreshed", ...optionalMeta }
+          : { status: "assisted_posted", ...optionalMeta },
       ),
     });
     if (!res.ok) {
@@ -160,10 +168,45 @@ export default function AssistActions({
         </ul>
       </section>
 
+      <section className="card space-y-3">
+        <div>
+          <h2 className="section-label">6. Save proof for follow-up</h2>
+          <p className="mt-1 text-sm text-zinc-500">
+            Optional, but useful: paste the live listing URL or a short note after you post. This
+            keeps future stats and refresh reminders tied to the right manual listing.
+          </p>
+        </div>
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+            Listing URL
+          </span>
+          <input
+            type="url"
+            inputMode="url"
+            value={listingUrl}
+            onChange={(event) => setListingUrl(event.target.value)}
+            placeholder="https://www.facebook.com/marketplace/item/..."
+            className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none ring-blue-500/40 placeholder:text-zinc-600 focus:ring-2"
+          />
+        </label>
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+            Manual note
+          </span>
+          <textarea
+            value={manualNote}
+            onChange={(event) => setManualNote(event.target.value)}
+            placeholder="Posted with local pickup only; buyer messages should go through the marketplace."
+            rows={3}
+            className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none ring-blue-500/40 placeholder:text-zinc-600 focus:ring-2"
+          />
+        </label>
+      </section>
+
       {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button type="button" onClick={markPosted} disabled={busy} className="btn-primary">
-        {busy ? "Saving…" : mode === "refresh" ? "6. I reposted it" : "6. I posted it"}
+        {busy ? "Saving…" : mode === "refresh" ? "7. I reposted it" : "7. I posted it"}
       </button>
     </div>
   );
