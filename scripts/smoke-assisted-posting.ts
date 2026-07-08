@@ -6,6 +6,7 @@ import type { MarketplaceId } from "../lib/types";
 import {
   CATEGORY_AGENT_PROFILES,
   MARKETPLACE_AGENT_PROFILES,
+  inferCategoryAgentProfile,
   type SellerChannelId,
 } from "../lib/marketplace-agents";
 
@@ -116,6 +117,19 @@ async function main() {
   assert(
     Object.keys(CATEGORY_AGENT_PROFILES).length >= 7,
     "category specialist profiles missing expected coverage",
+  );
+  const electronicsProfile = inferCategoryAgentProfile({
+    category: "Electronics",
+    title: "Nintendo Switch OLED console bundle",
+  });
+  assert(electronicsProfile?.id === "electronics", "category specialist inference missed electronics");
+  const furnitureProfile = inferCategoryAgentProfile({
+    category: "Furniture",
+    title: "solid wood desk",
+  });
+  assert(
+    furnitureProfile?.id === "home-goods-furniture",
+    "category specialist inference missed furniture",
   );
   ok("mini-agent profiles cover Facebook-first assisted workflows, Amazon stubs, and category specialists");
 

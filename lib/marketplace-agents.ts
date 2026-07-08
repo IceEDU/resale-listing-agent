@@ -226,10 +226,34 @@ export const CATEGORY_AGENT_PROFILES: Record<CategoryAgentId, CategoryAgentProfi
   },
 };
 
+const CATEGORY_MATCHERS: Record<CategoryAgentId, RegExp[]> = {
+  electronics: [/electronics?/i, /phone|iphone|ipad|tablet|laptop|computer|camera|console|xbox|playstation|switch|tv/i],
+  tools: [/tools?/i, /drill|saw|driver|battery|charger|dewalt|milwaukee|makita|ryobi/i],
+  "bikes-outdoor": [/bike|bicycle|cycling|outdoor|camp|tent|kayak|ski|snowboard|fishing/i],
+  collectibles: [/collectible|toy|figure|card|vintage|antique|memorabilia|sealed/i],
+  "clothing-shoes": [/clothing|apparel|shoe|sneaker|boot|shirt|jacket|pants|dress|size/i],
+  "home-goods-furniture": [/furniture|home|decor|chair|table|desk|dresser|sofa|couch|lamp|rug/i],
+  "books-media": [/book|media|dvd|blu-?ray|cd|vinyl|game|isbn|upc/i],
+};
+
 export function getMarketplaceAgentProfile(id: SellerChannelId): MarketplaceAgentProfile {
   return MARKETPLACE_AGENT_PROFILES[id];
 }
 
 export function getCategoryAgentProfile(id: CategoryAgentId): CategoryAgentProfile {
   return CATEGORY_AGENT_PROFILES[id];
+}
+
+export function inferCategoryAgentProfile(input: {
+  category?: string;
+  title?: string;
+}): CategoryAgentProfile | undefined {
+  const haystack = `${input.category ?? ""} ${input.title ?? ""}`.trim();
+  if (!haystack) return undefined;
+
+  const match = (Object.keys(CATEGORY_MATCHERS) as CategoryAgentId[]).find((id) =>
+    CATEGORY_MATCHERS[id].some((pattern) => pattern.test(haystack)),
+  );
+
+  return match ? CATEGORY_AGENT_PROFILES[match] : undefined;
 }
