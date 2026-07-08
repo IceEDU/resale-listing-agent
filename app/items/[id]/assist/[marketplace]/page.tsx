@@ -110,6 +110,7 @@ export default async function AssistPage({
         copyPacket={fallback.copyPacket}
         photoChecklist={photoChecklist}
         fieldGuide={fallback.fields}
+        researchPrompts={fallback.researchPrompts}
         metricPrompts={fallback.metricPrompts}
         createUrl={fallback.createUrl}
         mode={mode}

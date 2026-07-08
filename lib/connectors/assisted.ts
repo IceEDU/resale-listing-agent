@@ -16,7 +16,14 @@ export function isAssisted(id: MarketplaceId): id is AssistedId {
 
 export const ASSISTED_TARGETS: Record<
   AssistedId,
-  { label: string; createUrl: string; tip: string; fieldOrder: string[]; metricPrompts: string[] }
+  {
+    label: string;
+    createUrl: string;
+    tip: string;
+    fieldOrder: string[];
+    metricPrompts: string[];
+    researchPrompts: string[];
+  }
 > = {
   facebook: {
     label: "Facebook Marketplace",
@@ -28,6 +35,11 @@ export const ASSISTED_TARGETS: Record<
       "If saves are healthy but messages are quiet, keep price steady and improve the first photo/title before dropping price.",
       "If views and saves are both low after a week, the app can recommend a manual refresh/repost cadence.",
     ],
+    researchPrompts: [
+      "Search Facebook Marketplace manually for the same brand/model within your pickup radius; write down 3 active asking prices.",
+      "Note whether local listings include delivery, accessories, or defects before matching their price.",
+      "Pick a list price with negotiation room and a separate realistic cash take price before posting.",
+    ],
   },
   craigslist: {
     label: "Craigslist",
@@ -37,6 +49,10 @@ export const ASSISTED_TARGETS: Record<
     metricPrompts: [
       "Track email/text inquiries manually; Craigslist does not provide a safe app-readable stats feed.",
       "If inquiries are spammy or low-quality, tighten pickup/payment wording before reducing price.",
+    ],
+    researchPrompts: [
+      "Check local Craigslist and nearby Facebook listings manually for 2–3 similar active prices.",
+      "Discount for bulky pickup friction unless the item is rare or easy to transport.",
     ],
   },
   mercari: {
@@ -48,6 +64,10 @@ export const ASSISTED_TARGETS: Record<
       "Record likes and offers manually so recommendations can separate pricing problems from low exposure.",
       "If likes appear but no offers land, leave room for offers before cutting the list price.",
     ],
+    researchPrompts: [
+      "Manually compare similar Mercari active and sold listings before choosing shipping and offer room.",
+      "Check whether shipping cost makes the item uncompetitive versus local sale channels.",
+    ],
   },
   poshmark: {
     label: "Poshmark",
@@ -57,6 +77,10 @@ export const ASSISTED_TARGETS: Record<
     metricPrompts: [
       "Track likes, shares, and offers manually; the app should never log into Poshmark for you.",
       "If likes build up, consider a manual offer-to-likers strategy rather than an immediate public price cut.",
+    ],
+    researchPrompts: [
+      "Manually compare same-brand style, size, and condition before listing; style keywords matter.",
+      "Choose a list price that leaves room for offers and platform fee impact.",
     ],
   },
 };
@@ -76,6 +100,7 @@ export type AssistedDraft = {
   copyPacket: string;
   fields: AssistedField[];
   metricPrompts: string[];
+  researchPrompts: string[];
 };
 
 function buildCopyPacket(label: string, fields: AssistedField[]): string {

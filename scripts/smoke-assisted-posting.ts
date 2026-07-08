@@ -75,6 +75,11 @@ async function main() {
     assert(!draft.copyPacket.includes(ASSISTED_TARGETS[marketplace].createUrl), `${marketplace} copy packet should not embed create URL or hidden handoff`);
     assert(draft.fields.length === ASSISTED_TARGETS[marketplace].fieldOrder.length, `${marketplace} field map length mismatch`);
     assert(draft.fields.every((field) => field.label && field.value && field.note), `${marketplace} field map has empty guidance`);
+    assert(draft.researchPrompts.length > 0, `${marketplace} draft missing manual comp research prompts`);
+    assert(
+      draft.researchPrompts.every((prompt) => /manual|manually|write down|compare|check|search|pick|choose|note/i.test(prompt)),
+      `${marketplace} research prompts must describe manual research, not scraping`,
+    );
     assert(
       draft.fields.some((field) => /Photos?/i.test(field.label) && /does not send|Upload manually/i.test(field.note)),
       `${marketplace} field map missing manual photo-upload guidance`,
@@ -84,6 +89,10 @@ async function main() {
       assert(
         draft.fields.some((field) => field.label === "Location" && /public meetup/i.test(field.note)),
         "facebook field map missing safe public-meetup location note",
+      );
+      assert(
+        draft.researchPrompts.some((prompt) => /Facebook Marketplace manually/i.test(prompt)),
+        "facebook draft missing safe manual Facebook comp prompt",
       );
     }
   }

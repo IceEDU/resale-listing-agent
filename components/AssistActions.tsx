@@ -43,6 +43,7 @@ export default function AssistActions({
   copyPacket,
   photoChecklist,
   fieldGuide,
+  researchPrompts,
   metricPrompts,
   createUrl,
   mode = "post",
@@ -55,6 +56,7 @@ export default function AssistActions({
   copyPacket: string;
   photoChecklist: string[];
   fieldGuide: AssistedField[];
+  researchPrompts: string[];
   metricPrompts: string[];
   createUrl: string;
   mode?: "post" | "refresh";
@@ -135,8 +137,23 @@ export default function AssistActions({
         </ol>
       </section>
 
+      <section className="card space-y-3 border-amber-400/20 bg-amber-500/10">
+        <div>
+          <h2 className="section-label">3. Manual comp check</h2>
+          <p className="mt-1 text-sm text-amber-50/75">
+            Use these prompts before opening the marketplace. Research happens in your browser by hand;
+            the app does not scrape listings or read account pages.
+          </p>
+        </div>
+        <ul className="space-y-2 text-sm text-amber-50/90">
+          {researchPrompts.map((prompt) => (
+            <li key={prompt}>• {prompt}</li>
+          ))}
+        </ul>
+      </section>
+
       <section className="card">
-        <h2 className="section-label">3. Photo checklist</h2>
+        <h2 className="section-label">4. Photo checklist</h2>
         <ul className="mt-2 space-y-2">
           {photoChecklist.map((tip, i) => (
             <li key={tip}>
@@ -157,12 +174,12 @@ export default function AssistActions({
       </section>
 
       <a href={createUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary">
-        4. Open the marketplace ↗
+        5. Open the marketplace ↗
       </a>
 
       <section className="card space-y-3 border-emerald-400/20 bg-emerald-500/10">
         <div>
-          <h2 className="section-label">5. What to track after posting</h2>
+          <h2 className="section-label">6. What to track after posting</h2>
           <p className="mt-1 text-sm text-emerald-50/75">
             Enter these stats manually later so recommendations stay useful without scraping or
             marketplace login automation.
@@ -177,7 +194,7 @@ export default function AssistActions({
 
       <section className="card space-y-3">
         <div>
-          <h2 className="section-label">6. Save proof for follow-up</h2>
+          <h2 className="section-label">7. Save proof for follow-up</h2>
           <p className="mt-1 text-sm text-zinc-500">
             Optional, but useful: paste the live listing URL or a short note after you post. This
             keeps future stats and refresh reminders tied to the right manual listing.
@@ -213,7 +230,7 @@ export default function AssistActions({
       {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button type="button" onClick={markPosted} disabled={busy} className="btn-primary">
-        {busy ? "Saving…" : mode === "refresh" ? "7. I reposted it" : "7. I posted it"}
+        {busy ? "Saving…" : mode === "refresh" ? "8. I reposted it" : "8. I posted it"}
       </button>
     </div>
   );
