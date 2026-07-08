@@ -1,38 +1,50 @@
-# Marketplace mini-agent foundation
+# Marketplace agent playbook
 
-This app uses marketplace/category “mini agents” as strategy profiles, not autonomous marketplace bots. Profiles live in `lib/marketplace-agents.ts` and are intentionally data-only for now so the UI, recommendation engine, and future real AI layer can share the same guardrails.
+This project uses marketplace-specialist and category-specialist mini-agent profiles to guide research, pricing, listing copy, and safe posting strategy. The implementation lives in `lib/marketplace-agents.ts`; the in-app reference screen is `/more/agents`.
 
-## Safety contract
+## Safety model
 
-- Facebook Marketplace, Craigslist, Mercari, and Poshmark stay **assisted-only**: prepare copy, photo checklist, pricing notes, and a create-page link; the seller posts manually.
-- No scraping, cookies, login automation, background polling, or auto-posting on assisted marketplaces.
-- eBay/Etsy can become official API connectors only after real credentials/OAuth exist and the API confirms success.
-- Amazon is a **future official API research stub** only. Do not create offers or claim listing support until SP-API authorization, eligibility checks, and seller approval are implemented.
+- **Facebook Marketplace, Craigslist, Mercari, and Poshmark stay assisted-only.** The app may prepare copy, a field checklist, photo checklist, pricing notes, manual stat prompts, and a create-page link. The seller posts, edits, refreshes, and marks sold manually.
+- **No scraping, cookies, login automation, background polling, or auto-posting** for assisted marketplaces.
+- **eBay and Etsy are official-API targets only when credentials exist.** Until then, connectors must report an honest draft/not-configured state.
+- **Amazon is research-only for now.** Do not create offers, claim eligibility, or simulate SP-API success without seller authorization, SP-API credentials, and eligibility checks.
 
-## Marketplace agents
+## Public source notes checked this tick
 
-- **Facebook Local Agent**: local cash price, fast-sale/take-price spread, title keywords, negotiation wording, safe pickup wording, manual views/saves/messages, and repost cadence.
-- **eBay Agent**: sold-vs-active comp strategy, shipping/fee-aware pricing, condition notes, and future Sell API publishing.
-- **Etsy Agent**: eligibility for handmade/vintage/supply items, tags/materials, shipping profile, and future Open API support.
-- **Craigslist / Local Agent**: short direct copy, city/category fit, pickup safety, and local price bands.
-- **Mercari Agent**: shipping tier, offer room, bundle language, and mobile-friendly copy.
-- **Poshmark Agent**: brand/style/size keywords, measurements, and offer strategy.
-- **Amazon Agent**: ASIN matching, restricted category/brand checks, FBA/FBM notes, and do-not-list warnings. This remains a documented stub until SP-API and eligibility work exists.
+- Facebook developer Marketplace docs are publicly reachable, but the app still treats consumer Marketplace posting as assisted-only because there is no safe public individual-seller auto-posting path: https://developers.facebook.com/docs/marketplace/
+- eBay selling automation belongs behind documented Sell APIs and OAuth: https://developer.ebay.com/api-docs/sell/static/sell-landing.html
+- Amazon future work belongs behind the Selling Partner API and seller eligibility flow: https://developer-docs.amazon.com/sp-api/
+- Etsy publishing belongs behind Open API v3 credentials and seller authorization: https://developer.etsy.com/documentation/
 
-## Category specialists
+## Channel mini-agents
 
-Category profiles cover the seller-specific details that generic copy usually misses:
+### Facebook Local Agent
 
-- Electronics
-- Tools
-- Bikes & outdoor
-- Collectibles
-- Clothing & shoes
-- Home goods & furniture
-- Books & media
+Focus on local cash value, search-heavy titles, public meetup wording, negotiation room, and manual stats: views, saves, messages, and listing age. Use assisted repost/refresh recommendations only after user-entered stats or stale age support it.
 
-Each specialist provides keyword prompts, condition checks, risk flags, and pricing notes. The assisted posting screen now surfaces the marketplace profile, an inferred category specialist from the listing category/title, and a marketplace-specific manual field order. Facebook starts with photos/title/price/category/condition/description/availability/location, including safe public-meetup wording, so the seller gets a smoother posting checklist while preserving the assisted-only safety model.
+### eBay Agent
 
-## Public tooling notes
+Focus on sold-vs-active comps, shipping dimensions, fee-aware net, condition notes, and official Sell API readiness. It may prepare strategy before credentials exist, but cannot mark a listing live without API confirmation.
 
-Safe assisted-posting products like cross-listing tools generally optimize copy reuse, field mapping, and seller workflow. The app should follow that pattern for assisted marketplaces. Official API channels such as eBay, Etsy, and Amazon must stay behind honest connector capability checks instead of simulated success.
+### Amazon Agent
+
+Focus on ASIN matching, restricted/gated categories, hazmat risk, FBA/FBM notes, Buy Box context, and do-not-list warnings. Current product behavior should remain a planning/research stub only.
+
+### Mercari / Poshmark Agent
+
+Focus on mobile-friendly copy, shipping/fee sensitivity, brand/style/size details, bundle friendliness, and offer room. Posting remains manual.
+
+### Craigslist / Local Agent
+
+Focus on direct copy, local category choice, pickup safety, cash terms, and avoiding private home-address exposure.
+
+## Category mini-agents
+
+Current category specialists cover electronics, tools, bikes/outdoor, collectibles, clothing/shoes, home goods/furniture, and books/media. Each specialist contributes keyword prompts, condition checks, risk flags, and pricing notes that can be surfaced in assisted posting and future comp research.
+
+## Implementation notes
+
+- Keep the profile data deterministic and reviewable; it is product policy as much as UX copy.
+- Add new marketplaces as profiles first, then connector behavior second.
+- Add new categories by extending `CategoryAgentId`, `CATEGORY_AGENT_PROFILES`, and `CATEGORY_MATCHERS` together.
+- If a marketplace changes policy or exposes a real official seller API, update docs first, then code, then connector tests.

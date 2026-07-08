@@ -21,7 +21,7 @@ export default function PostOptions({
   options: MarketplaceOption[];
 }) {
   const router = useRouter();
-  const [selected, setSelected] = useState<Set<MarketplaceId>>(new Set(["ebay"]));
+  const [selected, setSelected] = useState<Set<MarketplaceId>>(new Set(["facebook"]));
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<PostResult[] | null>(null);
 

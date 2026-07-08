@@ -24,6 +24,12 @@ export default function MorePage() {
             The app audits its own data, prices, and connector honesty.
           </p>
         </Link>
+        <Link href="/more/agents" className="card block active:bg-white/5">
+          <div className="text-sm font-semibold">Marketplace agents →</div>
+          <p className="mt-1 text-sm text-zinc-500">
+            Facebook-first assisted posting playbooks, Amazon research guardrails, and category specialists.
+          </p>
+        </Link>
       </section>
 
       <section className="space-y-3">

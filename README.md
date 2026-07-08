@@ -15,7 +15,7 @@ Open http://localhost:3000. No database or API keys needed: without `DATABASE_UR
 
 - Tracks items and their listings across marketplaces in one dashboard.
 - Generates listing drafts from photos: title, category, condition, description, per-marketplace copy, keywords, price strategy, negotiation script (mock AI today, swappable interface in `lib/agent`).
-- Keeps marketplace/category mini-agent strategy profiles in `lib/marketplace-agents.ts` for Facebook-first local selling, eBay/Etsy official API paths, an Amazon SP-API research stub, and category-specific risk checks ([docs](./docs/MARKETPLACE_MINI_AGENTS.md)).
+- Surfaces marketplace/category mini-agent playbooks for Facebook-first assisted posting, Amazon research guardrails, and category risks (`/more/agents`, [docs/MARKETPLACE_MINI_AGENTS.md](./docs/MARKETPLACE_MINI_AGENTS.md)).
 - Generates recommendations: price drops, holds, reposts, listing fixes, all with duplicate prevention via fingerprints.
 - Tracks price history on every agent, manual, and accepted-suggestion change.
 - Checks stale listings and schedules review reminders (`nextReviewAt`).
@@ -48,7 +48,7 @@ Until then the stubs honestly report "not configured" and can never mark a listi
 4. **Post** (`/items/[id]/post`): eBay/Etsy stubs; assisted flow for the rest.
 5. **Assist** (`/items/[id]/assist/[marketplace]`): copy fields, photo checklist, open marketplace, mark posted. `?mode=refresh` runs the guided repost version.
 6. **For you** (`/recommendations`): suggestion feed with Accept / Dismiss.
-7. **More** (`/more`): automation service, self-check, rules, privacy.
+7. **More** (`/more`): automation service, self-check, marketplace agents, rules, privacy.
 
 ## Storage modes
 
