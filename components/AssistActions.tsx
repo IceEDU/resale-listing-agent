@@ -42,6 +42,7 @@ export default function AssistActions({
   body,
   photoChecklist,
   fieldGuide,
+  metricPrompts,
   createUrl,
   mode = "post",
 }: {
@@ -52,6 +53,7 @@ export default function AssistActions({
   body: string;
   photoChecklist: string[];
   fieldGuide: AssistedField[];
+  metricPrompts: string[];
   createUrl: string;
   mode?: "post" | "refresh";
 }) {
@@ -143,10 +145,25 @@ export default function AssistActions({
         4. Open the marketplace ↗
       </a>
 
+      <section className="card space-y-3 border-emerald-400/20 bg-emerald-500/10">
+        <div>
+          <h2 className="section-label">5. What to track after posting</h2>
+          <p className="mt-1 text-sm text-emerald-50/75">
+            Enter these stats manually later so recommendations stay useful without scraping or
+            marketplace login automation.
+          </p>
+        </div>
+        <ul className="space-y-2 text-sm text-emerald-50/90">
+          {metricPrompts.map((prompt) => (
+            <li key={prompt}>• {prompt}</li>
+          ))}
+        </ul>
+      </section>
+
       {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button type="button" onClick={markPosted} disabled={busy} className="btn-primary">
-        {busy ? "Saving…" : mode === "refresh" ? "5. I reposted it" : "5. I posted it"}
+        {busy ? "Saving…" : mode === "refresh" ? "6. I reposted it" : "6. I posted it"}
       </button>
     </div>
   );

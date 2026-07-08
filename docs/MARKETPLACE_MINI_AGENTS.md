@@ -46,5 +46,6 @@ Current category specialists cover electronics, tools, bikes/outdoor, collectibl
 
 - Keep the profile data deterministic and reviewable; it is product policy as much as UX copy.
 - Add new marketplaces as profiles first, then connector behavior second.
+- Assisted marketplace profiles now include `metricPrompts` in `lib/connectors/assisted.ts`; these tell the seller which manual stats to enter after posting so recommendations improve without scraping or account automation.
 - Add new categories by extending `CategoryAgentId`, `CATEGORY_AGENT_PROFILES`, and `CATEGORY_MATCHERS` together.
 - If a marketplace changes policy or exposes a real official seller API, update docs first, then code, then connector tests.

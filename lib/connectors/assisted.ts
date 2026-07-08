@@ -16,31 +16,48 @@ export function isAssisted(id: MarketplaceId): id is AssistedId {
 
 export const ASSISTED_TARGETS: Record<
   AssistedId,
-  { label: string; createUrl: string; tip: string; fieldOrder: string[] }
+  { label: string; createUrl: string; tip: string; fieldOrder: string[]; metricPrompts: string[] }
 > = {
   facebook: {
     label: "Facebook Marketplace",
     createUrl: "https://www.facebook.com/marketplace/create/item",
     tip: "Facebook requires you to tap Post yourself — there is no public listing API for individual sellers.",
     fieldOrder: ["Photos", "Title", "Price", "Category", "Condition", "Description", "Availability", "Location"],
+    metricPrompts: [
+      "After 24–48 hours, enter Facebook views, saves, and message count in the listing stats form.",
+      "If saves are healthy but messages are quiet, keep price steady and improve the first photo/title before dropping price.",
+      "If views and saves are both low after a week, the app can recommend a manual refresh/repost cadence.",
+    ],
   },
   craigslist: {
     label: "Craigslist",
     createUrl: "https://post.craigslist.org/",
     tip: "Craigslist has no listing API. Pick your city and category, then paste the draft.",
     fieldOrder: ["Posting title", "Price", "Specific location", "Postal code", "Description", "Photos"],
+    metricPrompts: [
+      "Track email/text inquiries manually; Craigslist does not provide a safe app-readable stats feed.",
+      "If inquiries are spammy or low-quality, tighten pickup/payment wording before reducing price.",
+    ],
   },
   mercari: {
     label: "Mercari",
     createUrl: "https://www.mercari.com/sell/",
     tip: "Mercari has no public listing API. Paste the draft into the sell form.",
     fieldOrder: ["Photos", "Title", "Description", "Category", "Brand", "Condition", "Shipping", "Price"],
+    metricPrompts: [
+      "Record likes and offers manually so recommendations can separate pricing problems from low exposure.",
+      "If likes appear but no offers land, leave room for offers before cutting the list price.",
+    ],
   },
   poshmark: {
     label: "Poshmark",
     createUrl: "https://poshmark.com/create-listing",
     tip: "Poshmark has no public listing API. Paste the draft into the create form.",
     fieldOrder: ["Photos", "Title", "Description", "Category", "Brand", "Size", "Condition", "Original price", "Listing price"],
+    metricPrompts: [
+      "Track likes, shares, and offers manually; the app should never log into Poshmark for you.",
+      "If likes build up, consider a manual offer-to-likers strategy rather than an immediate public price cut.",
+    ],
   },
 };
 
@@ -57,6 +74,7 @@ export type AssistedDraft = {
   tip: string;
   clipboardText: string;
   fields: AssistedField[];
+  metricPrompts: string[];
 };
 
 function buildFieldValue(item: Item, marketplace: AssistedId, label: string): string {
