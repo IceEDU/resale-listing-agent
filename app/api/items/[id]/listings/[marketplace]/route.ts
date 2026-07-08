@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getItem, setListingStatus, updateListingMeta } from "@/lib/store";
+import { getItem, setListingStatus, updateListingMeta, upsertListing } from "@/lib/store";
 import {
   LISTING_TRANSITIONS,
   MARKETPLACES,
@@ -25,6 +25,23 @@ export async function PATCH(req: Request, { params }: Params) {
   }
   const mp = marketplace as MarketplaceId;
   const body = await req.json().catch(() => ({}));
+
+  if (body.action === "mark_posted") {
+    const existing = await getItem(id);
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const item = await upsertListing(id, {
+      marketplace: mp,
+      mode: "assisted",
+      status: "assisted_posted",
+      postedAt: new Date().toISOString(),
+      externalUrl:
+        typeof body.externalUrl === "string" && body.externalUrl
+          ? body.externalUrl
+          : undefined,
+    });
+    if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json(item);
+  }
 
   if (body.action === "refreshed") {
     const now = new Date().toISOString();

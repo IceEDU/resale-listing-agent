@@ -11,7 +11,8 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "smoke:persistence": "tsx scripts/smoke-persistence.ts",
-    "smoke:automation": "tsx scripts/smoke-automation.ts"
+    "smoke:automation": "tsx scripts/smoke-automation.ts",
+    "smoke:marketplace-agents": "tsx scripts/smoke-marketplace-agents.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
