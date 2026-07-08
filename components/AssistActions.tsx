@@ -40,6 +40,7 @@ export default function AssistActions({
   title,
   price,
   body,
+  copyPacket,
   photoChecklist,
   fieldGuide,
   metricPrompts,
@@ -51,6 +52,7 @@ export default function AssistActions({
   title: string;
   price: number;
   body: string;
+  copyPacket: string;
   photoChecklist: string[];
   fieldGuide: AssistedField[];
   metricPrompts: string[];
@@ -96,9 +98,14 @@ export default function AssistActions({
         <h2 className="section-label">
           {mode === "refresh" ? "1. Copy the updated fields" : "1. Copy each field"}
         </h2>
+        <CopyRow label="All fields packet" value={copyPacket} />
         <CopyRow label="Title" value={title} />
         <CopyRow label="Price" value={String(price)} />
         <CopyRow label="Description" value={body} />
+        <p className="text-xs leading-relaxed text-zinc-500">
+          The all-fields packet is for speed on mobile. It is still a clipboard helper only — no
+          marketplace receives anything until you paste and post it yourself.
+        </p>
       </section>
 
       <section className="card space-y-3">

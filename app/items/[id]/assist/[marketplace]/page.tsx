@@ -107,6 +107,7 @@ export default async function AssistPage({
         title={title}
         price={price}
         body={body}
+        copyPacket={fallback.copyPacket}
         photoChecklist={photoChecklist}
         fieldGuide={fallback.fields}
         metricPrompts={fallback.metricPrompts}

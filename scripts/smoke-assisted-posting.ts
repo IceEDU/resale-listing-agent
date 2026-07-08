@@ -68,6 +68,11 @@ async function main() {
     assert(draft.clipboardText.includes(`Price: $${item.price}`), `${marketplace} draft missing price`);
     assert(draft.clipboardText.includes("Condition:"), `${marketplace} draft missing condition`);
     assert(draft.clipboardText.includes(item.description), `${marketplace} draft missing description`);
+    assert(draft.copyPacket.includes("manual posting packet"), `${marketplace} copy packet missing manual-post heading`);
+    assert(draft.copyPacket.includes("The app does not post"), `${marketplace} copy packet missing no-auto-post language`);
+    assert(draft.copyPacket.includes("Photos:"), `${marketplace} copy packet missing photo field`);
+    assert(draft.copyPacket.includes("Description:"), `${marketplace} copy packet missing description field`);
+    assert(!draft.copyPacket.includes(ASSISTED_TARGETS[marketplace].createUrl), `${marketplace} copy packet should not embed create URL or hidden handoff`);
     assert(draft.fields.length === ASSISTED_TARGETS[marketplace].fieldOrder.length, `${marketplace} field map length mismatch`);
     assert(draft.fields.every((field) => field.label && field.value && field.note), `${marketplace} field map has empty guidance`);
     assert(

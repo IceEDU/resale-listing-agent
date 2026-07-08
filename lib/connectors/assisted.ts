@@ -73,9 +73,19 @@ export type AssistedDraft = {
   createUrl: string;
   tip: string;
   clipboardText: string;
+  copyPacket: string;
   fields: AssistedField[];
   metricPrompts: string[];
 };
+
+function buildCopyPacket(label: string, fields: AssistedField[]): string {
+  return [
+    `${label} manual posting packet`,
+    "Paste these fields yourself in the marketplace form. The app does not post, log in, scrape, or send photos.",
+    "",
+    ...fields.map((field) => `${field.label}: ${field.value}`),
+  ].join("\n");
+}
 
 function buildFieldValue(item: Item, marketplace: AssistedId, label: string): string {
   const condition = CONDITION_LABELS[item.condition];
@@ -147,5 +157,5 @@ export function buildAssistedDraft(item: Item, marketplace: AssistedId): Assiste
   ]
     .filter((line, i, arr) => line !== "" || arr[i - 1] !== "")
     .join("\n");
-  return { marketplace, ...target, clipboardText, fields };
+  return { marketplace, ...target, clipboardText, copyPacket: buildCopyPacket(target.label, fields), fields };
 }
