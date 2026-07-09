@@ -23,6 +23,7 @@ export default function PostOptions({
   const router = useRouter();
   const [selected, setSelected] = useState<Set<MarketplaceId>>(new Set(["ebay"]));
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<PostResult[] | null>(null);
 
   function toggle(id: MarketplaceId) {
@@ -36,15 +37,24 @@ export default function PostOptions({
 
   async function post() {
     setBusy(true);
-    const res = await fetch(`/api/items/${itemId}/listings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ marketplaces: [...selected] }),
-    });
-    const body = await res.json();
-    setResults(body.results ?? []);
-    setBusy(false);
-    router.refresh();
+    setError(null);
+    try {
+      const res = await fetch(`/api/items/${itemId}/listings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ marketplaces: [...selected] }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || !Array.isArray(body.results)) {
+        throw new Error(body.error ?? "posting failed");
+      }
+      setResults(body.results);
+      router.refresh();
+    } catch {
+      setError("Couldn't prepare the listings, try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (results) {
@@ -92,6 +102,8 @@ export default function PostOptions({
           </span>
         </label>
       ))}
+
+      {error && <p className="text-sm text-red-300">{error}</p>}
 
       <button
         type="button"

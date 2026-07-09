@@ -47,14 +47,25 @@ export default async function ListingsPage({
         {visible.map((item) => (
           <ListingCard key={item.id} item={item} />
         ))}
-        {visible.length === 0 && (
-          <div className="card border-dashed text-center">
-            <p className="text-sm text-zinc-500">Nothing here yet.</p>
-            <Link href="/new" className="btn-primary mt-3">
-              Snap your first item
-            </Link>
-          </div>
-        )}
+        {visible.length === 0 &&
+          (items.length === 0 ? (
+            <div className="card border-dashed text-center">
+              <p className="text-sm text-zinc-500">Nothing here yet.</p>
+              <Link href="/new" className="btn-primary mt-3">
+                Snap your first item
+              </Link>
+            </div>
+          ) : (
+            <div className="card border-dashed text-center">
+              <p className="text-sm text-zinc-500">
+                No {FILTERS.find((f) => f.key === filter)?.label.toLowerCase() ?? ""}{" "}
+                listings.
+              </p>
+              <Link href="/listings" className="btn-secondary mt-3">
+                Show all listings
+              </Link>
+            </div>
+          ))}
       </div>
     </div>
   );

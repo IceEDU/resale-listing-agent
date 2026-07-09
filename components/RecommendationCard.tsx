@@ -29,20 +29,26 @@ export default function RecommendationCard({ rec }: { rec: RecommendationFeedEnt
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [phase, setPhase] = useState(rec.status);
 
   async function setStatus(status: string) {
     setBusy(true);
-    const res = await fetch(`/api/recommendations/${rec.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    if (res.ok) {
+    setError(null);
+    try {
+      const res = await fetch(`/api/recommendations/${rec.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error();
       setPhase(status as typeof rec.status);
       router.refresh();
+    } catch {
+      setError("Couldn't update, try again.");
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   async function copyPrice() {
@@ -91,6 +97,8 @@ export default function RecommendationCard({ rec }: { rec: RecommendationFeedEnt
       </div>
 
       <p className="mt-2.5 text-[15px] font-medium leading-snug">{rec.message}</p>
+
+      {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
 
       {phase === "pending" && (
         <div className="mt-3.5 flex gap-2">
