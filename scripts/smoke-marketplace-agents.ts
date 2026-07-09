@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { categoryFor, CATEGORY_STRATEGIES } from "../lib/categories";
 import { getMarketplaceAgent, MARKETPLACE_AGENTS } from "../lib/marketplace-agents";
 import { buildSeedItem } from "../lib/repo/seed-data";
@@ -109,6 +110,26 @@ console.log("4. No agent fakes live success; required fields validated");
   const fbThin = getMarketplaceAgent("facebook")!.validateRequiredFields(thin);
   if (!fbThin.some((f) => !f.ok)) fail("thin item should have failing field checks");
   ok(`all ${MARKETPLACE_AGENTS.length} agents validate fields, warn honestly; stubs flag not-configured`);
+}
+
+console.log("5. Marketplace lab keeps Facebook assisted posting practical");
+{
+  const lab = readFileSync("components/MarketplaceLab.tsx", "utf8");
+  const facebookAgentSource = readFileSync("lib/marketplace-agents/facebook.ts", "utf8");
+  for (const phrase of [
+    "Copy packet",
+    "Post one item to Facebook Marketplace safely",
+    "Publish from Facebook yourself",
+    "never logs in, scrapes, clicks, or posts for you",
+    "Paste the listing URL here",
+    "views, saves, and messages",
+  ]) {
+    if (!lab.includes(phrase)) fail(`marketplace lab missing assisted Facebook UI phrase: ${phrase}`);
+  }
+  if (!facebookAgentSource.includes("https://www.facebook.com/marketplace/create/item")) {
+    fail("facebook agent should route users to the official Facebook create-item page");
+  }
+  ok("marketplace lab: one-click packet, official Facebook open, safe manual posting checklist, stats prompt");
 }
 
 console.log("\n✓ Marketplace agent smoke test passed.");

@@ -65,6 +65,30 @@ function CopyButton({ label, value }: { label: string; value: string }) {
   );
 }
 
+function buildPostingPacket(draft: Draft) {
+  return [
+    `Title: ${draft.copy.title}`,
+    `Price: $${draft.price.list}`,
+    "",
+    draft.copy.description,
+    "",
+    `Realistic take: $${draft.price.realisticTake ?? draft.price.list}`,
+    `Fast-sale price: $${draft.price.fastSale ?? draft.price.list}`,
+    `Floor: $${draft.price.floor ?? draft.price.fastSale ?? draft.price.list}`,
+    "",
+    "Reminder: post manually on the official marketplace page, then paste the live URL back into the app.",
+  ].join("\n");
+}
+
+const FACEBOOK_POSTING_STEPS = [
+  "Copy the title, price, and description into Facebook Marketplace manually.",
+  "Upload clean daylight photos: front, sides, model/serial label, included accessories, and any flaws.",
+  "Use the safe pickup wording; do not put your full address in the public listing.",
+  "Publish from Facebook yourself — this app never logs in, scrapes, clicks, or posts for you.",
+  "Paste the listing URL here and tap ‘I posted it myself’ so tracking starts.",
+  "After 24–48 hours, log views, saves, and messages; if silent for 7–14 days, refresh or repost with a better first photo.",
+];
+
 export default function MarketplaceLab({ items }: { items: ItemOption[] }) {
   const [itemId, setItemId] = useState(items[0]?.id ?? "");
   const [marketplace, setMarketplace] = useState("facebook");
@@ -224,7 +248,14 @@ export default function MarketplaceLab({ items }: { items: ItemOption[] }) {
           </section>
 
           <section className="card space-y-2">
-            <h2 className="section-label">Draft: copy each field</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="section-label">Draft: copy each field</h2>
+              <CopyButton label="Copy packet" value={buildPostingPacket(draft)} />
+            </div>
+            <p className="text-xs leading-relaxed text-zinc-500">
+              The packet gives you everything in one clipboard pass; the field buttons are
+              there when a marketplace asks for one box at a time.
+            </p>
             <div className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-3 py-2.5">
               <div className="min-w-0">
                 <div className="text-xs text-zinc-500">Title</div>
@@ -265,6 +296,19 @@ export default function MarketplaceLab({ items }: { items: ItemOption[] }) {
                   </li>
                 ))}
               </ul>
+            </section>
+          )}
+
+          {marketplace === "facebook" && (
+            <section className="card border-blue-400/20 bg-blue-500/10">
+              <h2 className="section-label text-blue-200">
+                Post one item to Facebook Marketplace safely
+              </h2>
+              <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-sm leading-relaxed text-blue-100/90">
+                {FACEBOOK_POSTING_STEPS.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
             </section>
           )}
 
