@@ -356,10 +356,11 @@ export default function MarketplaceLab({ items }: { items: ItemOption[] }) {
               </a>
             )}
             <p className="text-xs leading-relaxed text-zinc-500">{draft.nextAction.label}</p>
-            {draft.mode === "advisory" ? (
+            {draft.mode !== "assisted" ? (
               <p className="text-xs text-zinc-500">
-                Tracking for this marketplace isn&apos;t supported yet, so there is nothing to
-                mark posted here.
+                {draft.mode === "api_stub"
+                  ? "This marketplace needs an official API connector before the app can track a live posting. Use this draft as preparation only."
+                  : "Tracking for this marketplace isn't supported yet, so there is nothing to mark posted here."}
               </p>
             ) : (
               <>

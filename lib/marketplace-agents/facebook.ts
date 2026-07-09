@@ -3,6 +3,15 @@ import type { Item } from "../types";
 import { baseAnalysis, baseCopy, commonFieldChecks, priceTiers } from "./shared";
 import type { MarketplaceAgent } from "./types";
 
+function facebookDescription(item: Item): string {
+  const copy = baseCopy(item, "facebook");
+  return [
+    copy.description,
+    "",
+    "Cash or Zelle at pickup. Porch pickup or public meetup, flexible on time.",
+  ].join("\n");
+}
+
 /**
  * Facebook Local Agent: the most complete agent because most inventory moves
  * here. Everything is assisted: the agent drafts, the user posts.
@@ -41,22 +50,19 @@ export const facebookAgent: MarketplaceAgent = {
     const category = categoryFor(item);
     return {
       title: copy.title,
-      description: [
-        copy.description,
-        "",
-        "Cash or Zelle at pickup. Porch pickup or public meetup, flexible on time.",
-      ].join("\n"),
+      description: facebookDescription(item),
       keywords: [...new Set([...copy.keywords, ...category.keywordSuggestions])].slice(0, 10),
     };
   },
 
   validateRequiredFields(item) {
+    const generatedDescription = facebookDescription(item);
     return [
       ...commonFieldChecks(item),
       {
         field: "pickup",
         label: "Pickup plan",
-        ok: /pickup|meetup|porch/i.test(item.agent?.copy.facebook?.body ?? item.description),
+        ok: /pickup|meetup|porch/i.test(generatedDescription),
         hint: "Say how handover works: porch pickup or public meetup",
       },
     ];

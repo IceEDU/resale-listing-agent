@@ -9,6 +9,13 @@ import {
 
 type Params = { params: Promise<{ id: string; marketplace: string }> };
 
+const ASSISTED_POSTING_MARKETPLACES: MarketplaceId[] = [
+  "facebook",
+  "craigslist",
+  "mercari",
+  "poshmark",
+];
+
 const VALID_STATUSES: ListingStatus[] = [
   "draft",
   "ready",
@@ -29,6 +36,31 @@ export async function PATCH(req: Request, { params }: Params) {
   if (body.action === "mark_posted") {
     const existing = await getItem(id);
     if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!ASSISTED_POSTING_MARKETPLACES.includes(mp)) {
+      return NextResponse.json(
+        { error: "This marketplace cannot be marked posted from the assisted flow." },
+        { status: 409 },
+      );
+    }
+
+    const current = existing.listings.find((l) => l.marketplace === marketplace);
+    if (current?.status === "assisted_posted") {
+      const item = await updateListingMeta(id, mp, {
+        lastCheckedAt: new Date().toISOString(),
+        ...(typeof body.externalUrl === "string" && body.externalUrl
+          ? { externalUrl: body.externalUrl }
+          : {}),
+      });
+      if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json(item);
+    }
+    if (current && !LISTING_TRANSITIONS[current.status].includes("assisted_posted")) {
+      return NextResponse.json(
+        { error: `Cannot go from "${current.status}" to "assisted_posted".` },
+        { status: 409 },
+      );
+    }
+
     const item = await upsertListing(id, {
       marketplace: mp,
       mode: "assisted",

@@ -116,6 +116,7 @@ console.log("5. Marketplace lab keeps Facebook assisted posting practical");
 {
   const lab = readFileSync("components/MarketplaceLab.tsx", "utf8");
   const facebookAgentSource = readFileSync("lib/marketplace-agents/facebook.ts", "utf8");
+  const listingRoute = readFileSync("app/api/items/[id]/listings/[marketplace]/route.ts", "utf8");
   for (const phrase of [
     "Copy packet",
     "Post one item to Facebook Marketplace safely",
@@ -128,6 +129,20 @@ console.log("5. Marketplace lab keeps Facebook assisted posting practical");
   }
   if (!facebookAgentSource.includes("https://www.facebook.com/marketplace/create/item")) {
     fail("facebook agent should route users to the official Facebook create-item page");
+  }
+  const fbFields = getMarketplaceAgent("facebook")!.validateRequiredFields(dewalt);
+  if (fbFields.some((f) => f.field === "pickup" && !f.ok)) {
+    fail("generated Facebook copy should satisfy the pickup field check");
+  }
+  for (const phrase of [
+    'draft.mode !== "assisted"',
+    "official API connector",
+    "ASSISTED_POSTING_MARKETPLACES",
+    "This marketplace cannot be marked posted",
+  ]) {
+    if (!`${lab}\n${listingRoute}`.includes(phrase)) {
+      fail(`marketplace lab/route missing safety phrase: ${phrase}`);
+    }
   }
   ok("marketplace lab: one-click packet, official Facebook open, safe manual posting checklist, stats prompt");
 }
