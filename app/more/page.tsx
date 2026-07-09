@@ -24,6 +24,13 @@ export default function MorePage() {
             The app audits its own data, prices, and connector honesty.
           </p>
         </Link>
+        <Link href="/more/marketplace-lab" className="card block active:bg-white/5">
+          <div className="text-sm font-semibold">Posting lab →</div>
+          <p className="mt-1 text-sm text-zinc-500">
+            Marketplace-specific drafts, prices, and playbooks. Test any item against any
+            marketplace.
+          </p>
+        </Link>
       </section>
 
       <section className="space-y-3">
