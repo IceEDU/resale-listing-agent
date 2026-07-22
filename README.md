@@ -1,6 +1,6 @@
 # Listing Agent
 
-AI-assisted resale listing agent: a mobile-first PWA that turns photos of stuff you want to sell into ready-to-post marketplace listings, then keeps watching them: prices, health, staleness, and what to do next. Design spec in [DESIGN.md](./DESIGN.md), architecture in [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+AI-assisted resale listing agent: a mobile-first PWA that turns photos of stuff you want to sell into ready-to-post marketplace listings, then keeps watching them: prices, health, staleness, and what to do next. Design spec in [DESIGN.md](./DESIGN.md), architecture in [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md), SaaS strategy in [docs/AI_RESALE_SAAS_STRATEGY.md](./docs/AI_RESALE_SAAS_STRATEGY.md), and competitor notes in [docs/COMPETITOR_RESEARCH.md](./docs/COMPETITOR_RESEARCH.md).
 
 ## Quick start
 
