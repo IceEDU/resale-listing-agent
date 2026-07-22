@@ -2,6 +2,8 @@
 
 Ten phases from prototype to production. Phase 1 is implemented; everything else is planned only. Global rules that apply to every phase: no scraping, no login automation, assisted-only for Facebook/Craigslist/Mercari/Poshmark, no faked connector success, consent gate stays, and every automated action remains user-approved.
 
+Strategic SaaS direction lives in [docs/AI_RESALE_SAAS_STRATEGY.md](./docs/AI_RESALE_SAAS_STRATEGY.md), with supporting market notes in [docs/COMPETITOR_RESEARCH.md](./docs/COMPETITOR_RESEARCH.md). The product wedge is an AI resale copilot: photo-first item understanding, realistic price ladders, marketplace fit guidance, listing copy, negotiation replies, and safe follow-up recommendations.
+
 ---
 
 ## Phase 1: GitHub + CI (implemented)
